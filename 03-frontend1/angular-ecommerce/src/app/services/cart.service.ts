@@ -12,6 +12,21 @@ export class CartService {
 
   totalQuantity: Subject<number> = new Subject<number>();
 
+  removeFromCart(theCartItem:CartItem){
+    if(this.cartItems.length === 0){
+      return;
+    }
+    const itemIndex = this.cartItems.findIndex(
+      tempCartItem => tempCartItem.id === theCartItem.id
+    );
+
+    if(itemIndex >-1){
+      this.cartItems.splice(itemIndex,1);
+      this.computeCartTotals();
+    }
+
+  }
+
   addToCart(theCartItem: CartItem) {
     // check if we already have the item in our cart
     let alreadExistsInCart: boolean = false;

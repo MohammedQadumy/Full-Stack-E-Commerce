@@ -14,7 +14,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StatusComponent } from './components/status/status.component';
 import { CartDetailsComponent } from './components/cart-details/cart-details.component';
 import { CheckoutComponent } from './components/checkout/checkout.component';
-
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 const routes:Routes = [
   {path:'checkout' , component:CheckoutComponent},
@@ -39,6 +39,7 @@ const routes:Routes = [
     ProductDetailsComponent,
     StatusComponent,
     CartDetailsComponent,
+    CheckoutComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -46,6 +47,8 @@ const routes:Routes = [
     HttpClientModule,
     NgbModule,
     CommonModule,
+    ReactiveFormsModule,
+    FormsModule,
   ],
   providers: [ProductService],
   bootstrap: [AppComponent]

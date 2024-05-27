@@ -1,5 +1,6 @@
 import { Component,OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Luv2ShopFormService } from 'src/app/services/luv2-shop-form.service';
 
 
 @Component({
@@ -7,18 +8,43 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.css'
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnInit {
 
 
   checkoutFormGroup!:FormGroup;
   totalPrice:number=0;
   totalQuantity:number=0;
-  
-  constructor(private formBuilder:FormBuilder){
 
-  }
+  creditCardYears:number[] =[];
+  creditCardMonths:number[] =[];
+
+
+
+  constructor(private formBuilder:FormBuilder ,
+    private luv2ShopFormService:Luv2ShopFormService
+  ){}
 
   ngOnInit():void{
+
+    const startMonth:number = new Date().getMonth()+1;
+    console.log(`Start Month : ${startMonth}`);
+
+    this.luv2ShopFormService.getCreditCardMonths(startMonth).subscribe(
+      data=>{
+        console.log("Retrieved credit card Months" + JSON.stringify(data));
+        this.creditCardMonths = data;
+      }
+    );
+
+
+    this.luv2ShopFormService.getCreditCardYears().subscribe(
+      data=>{
+        console.log("Retrieved credit card Months" + JSON.stringify(data));
+        this.creditCardYears = data;
+      }
+    );
+
+
     this.checkoutFormGroup = this.formBuilder.group({
       customer:this.formBuilder.group({
         firstName:[''],
@@ -28,9 +54,9 @@ export class CheckoutComponent {
       shippingAddress:this.formBuilder.group({
         street:[''],
         city:[''],
-        //state:[''],
-        //country:[''],
-        //zipCode:[''],
+        state:[''],
+        country:[''],
+        zipCode:[''],
       }),
       creditCard:this.formBuilder.group({
         cardType:[''],
@@ -44,9 +70,9 @@ export class CheckoutComponent {
       billingAddress:this.formBuilder.group({
         street:[''],
         city:[''],
-        //state:[''],
-        //country:[''],
-        //zipCode:[''],
+        state:[''],
+        country:[''],
+        zipCode:[''],
       })
     });
   }
@@ -57,6 +83,9 @@ export class CheckoutComponent {
     console.log(this.checkoutFormGroup.get('customer')!.value);
 
   }
+
+
+
 
   copyShippingAddressToBillingAddress($event: Event) {
     if (($event.target as HTMLInputElement).checked) {
@@ -83,5 +112,28 @@ export class CheckoutComponent {
     // }
 
 
+    }
+
+
+    handleMonthsAndYears(){
+      const creditCardFormGroup = this.checkoutFormGroup.get('creditCard');
+      const currentYear:number = new Date().getFullYear();
+      const selectedYear: number = Number(creditCardFormGroup?.value.expirationYear);
+
+      let startMonth:number;
+
+      if(currentYear == selectedYear){
+        startMonth = new Date().getMonth()+1;
+      }
+      else{
+        startMonth =1;
+      }
+
+      this.luv2ShopFormService.getCreditCardMonths(startMonth).subscribe(
+        data => {
+          console.log("Retrieved credit card months: " + JSON.stringify(data));
+          this.creditCardMonths = data;
+        }
+      )
     }
 }

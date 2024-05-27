@@ -30,11 +30,11 @@ export class CartService {
   addToCart(theCartItem: CartItem) {
     // check if we already have the item in our cart
     let alreadExistsInCart: boolean = false;
-    let existingCartItem: CartItem | null = null;
+    let existingCartItem: CartItem | undefined;
 
     if (this.cartItems.length > 0) {
       // find the item in the cart based on item id
-      let existingCartItem =  this.cartItems.find(tempCartItem => tempCartItem.id === theCartItem.id);
+      existingCartItem =  this.cartItems.find(tempCartItem => tempCartItem.id === theCartItem.id);
     }
     // check if we found it
     alreadExistsInCart = existingCartItem != null;

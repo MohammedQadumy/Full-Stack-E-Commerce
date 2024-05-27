@@ -40,7 +40,11 @@
             <div class="col-md-2"><label for="">Country</label></div>
             <div class="col-md-9">
               <div class="input-space">
-                <select formControlName="country" id=""></select>
+                <select formControlName="country" id="" (change)="getStates('shippingAddress')">
+                  <option *ngFor="let country of countries" [ngValue]="country">
+                    {{ country.name }}
+                  </option>
+                </select>
               </div>
             </div>
           </div>
@@ -67,7 +71,9 @@
             <div class="col-md-2"><label for="">State</label></div>
             <div class="col-md-9">
               <div class="input-space">
-                <select formControlName="state" id=""></select>
+                <select formControlName="state" id="">
+                  <option *ngFor="let state of shippingAddressStates" [ngValue]="state">{{state.name}}</option>
+                </select>
               </div>
             </div>
           </div>
@@ -103,7 +109,11 @@
             <div class="col-md-2"><label for="">Country</label></div>
             <div class="col-md-9">
               <div class="input-space">
-                <select formControlName="country" id=""></select>
+                <select formControlName="country" id="">
+                  <option *ngFor="let country of countries" [ngValue]="country">
+                    {{ country.name }}
+                  </option>
+                </select>
               </div>
             </div>
           </div>
@@ -130,7 +140,9 @@
             <div class="col-md-2"><label for="">State</label></div>
             <div class="col-md-9">
               <div class="input-space">
-                <select formControlName="state" id=""></select>
+                <select formControlName="state" id="">
+                  <option *ngFor="let state of billingAddressStates" [ngValue]="state">{{state.name}}</option>
+                </select>
               </div>
             </div>
           </div>
@@ -150,7 +162,6 @@
         <div formGroupName="creditCard" class="form-area">
           <h3>Credit Card</h3>
 
-
           <div class="row">
             <div class="col-md-2"><label for="">Card Type</label></div>
             <div class="col-md-9">
@@ -160,60 +171,64 @@
             </div>
           </div>
 
-            <div class="row">
-              <div class="col-md-2"><label for="">Name On Card</label></div>
-              <div class="col-md-9">
-                <div class="input-space">
-                  <input formControlName="nameOnCard" type="text" />
-                </div>
+          <div class="row">
+            <div class="col-md-2"><label for="">Name On Card</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="nameOnCard" type="text" />
               </div>
             </div>
-
-            <div class="row">
-              <div class="col-md-2"><label for="">Card Number</label></div>
-              <div class="col-md-9">
-                <div class="input-space">
-                  <input formControlName="cardNumber" type="text" />
-                </div>
-              </div>
-            </div>
-
-
-            <div class="row">
-              <div class="col-md-2"><label for="">Security Code</label></div>
-              <div class="col-md-9">
-                <div class="input-space">
-                  <input formControlName="security" type="text" />
-                </div>
-              </div>
-            </div>
-
-
-            <div class="row">
-              <div class="col-md-2"><label for="">Expiration Month</label></div>
-              <div class="col-md-9">
-                <div class="input-space">
-                  <select formControlName="expirationMonth" name="" id="">
-                    <option *ngFor="let month of creditCardMonths">{{month}}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="row">
-              <div class="col-md-2"><label for="">Expiration Year</label></div>
-              <div class="col-md-9">
-                <div class="input-space">
-                  <select formControlName="expirationYear" name="" id="" (change)="handleMonthsAndYears()">
-                    <option *ngFor="let year of creditCardYears">{{year}}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
           </div>
 
+          <div class="row">
+            <div class="col-md-2"><label for="">Card Number</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="cardNumber" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2"><label for="">Security Code</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <input formControlName="security" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2"><label for="">Expiration Month</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select formControlName="expirationMonth" name="" id="">
+                  <option *ngFor="let month of creditCardMonths">
+                    {{ month }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-2"><label for="">Expiration Year</label></div>
+            <div class="col-md-9">
+              <div class="input-space">
+                <select
+                  formControlName="expirationYear"
+                  name=""
+                  id=""
+                  (change)="handleMonthsAndYears()"
+                >
+                  <option *ngFor="let year of creditCardYears">
+                    {{ year }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div class="form-area">
           <h3>Review Your Order</h3>

@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import {of} from 'rxjs';
 import { Country } from '../common/country';
 import {map} from 'rxjs/operators';
-import { State } from '@popperjs/core';
+import { State } from 'src/app/common/state';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,9 +29,10 @@ export class Luv2ShopFormService {
 
 
    getStates(theCountryCode:string):Observable<State[]>{
-    const searchStateUrl = `${this.statesUrl}/search/findByCountryCode?code=${theCountryCode}`
+    //const searchStateUrl = `${this.statesUrl}/search/findByCountryCode?code=${theCountryCode}`;
+    const searchStateUrl = `${this.statesUrl}/search/findByCountryCode?code=${theCountryCode}`;
     return this.httpClient.get<GetResponseStates>(searchStateUrl).pipe(
-      map(response => response._embedded.countries)
+      map(response => response._embedded.states)
     );
  }
 
@@ -64,6 +66,6 @@ interface GetResponseCountries{
 }
 interface GetResponseStates{
   _embedded:{
-    countries:State[];
+    states:State[];
   }
 }

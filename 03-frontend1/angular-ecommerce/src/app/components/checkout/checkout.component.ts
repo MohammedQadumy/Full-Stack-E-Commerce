@@ -1,8 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { State } from 'src/app/common/state';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { Country } from 'src/app/common/country';
 import { Luv2ShopFormService } from 'src/app/services/luv2-shop-form.service';
+import { State } from 'src/app/common/state';
+import { Luv2ShopValidators } from 'src/app/validators/luv2-shop-validators';
+import { CartService } from 'src/app/services/cart.service';
 
 @Component({
   selector: 'app-checkout',
@@ -18,16 +25,19 @@ export class CheckoutComponent implements OnInit {
   creditCardMonths: number[] = [];
 
   countries: Country[] = [];
-  shippingAddressStates:State[]=[];
-  billingAddressStates:State[]=[];
-
+  shippingAddressStates: State[] = [];
+  billingAddressStates: State[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
-    private luv2ShopFormService: Luv2ShopFormService
+    private luv2ShopFormService: Luv2ShopFormService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
+
+    this.reviewCartDetails();
+
     const startMonth: number = new Date().getMonth() + 1;
     console.log(`Start Month : ${startMonth}`);
 
@@ -52,10 +62,18 @@ export class CheckoutComponent implements OnInit {
 
     this.checkoutFormGroup = this.formBuilder.group({
       customer: this.formBuilder.group({
-        firstName: [''],
-        lastName: [''],
-        email: [''],
-      }),
+        'firstName': new FormControl('',
+        [Validators.required, Validators.minLength(2),Luv2ShopValidators.notOnlyWhiteSpace]
+        ),
+        'lastName': new FormControl('',
+        [Validators.required, Validators.minLength(2),Luv2ShopValidators.notOnlyWhiteSpace]
+        ),
+        'email': new FormControl('',
+        [Validators.required,
+        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),Luv2ShopValidators.notOnlyWhiteSpace] // works for anuva@gmail.com
+        )
+        }),
+
       shippingAddress: this.formBuilder.group({
         street: [''],
         city: [''],
@@ -82,7 +100,28 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  reviewCartDetails() {
+    // subscribe to cartService.totalQuantity
+
+    this.cartService.totalQuantity.subscribe(
+      totalQuantity => this.totalQuantity = totalQuantity
+    );
+
+    // subscribe to cartService.totalPrice
+
+
+    // check here 
+    this.cartService.totalPrice.subscribe(
+      totalPrice => this.totalPrice = totalPrice
+    );
+
+  }
+
   onSubmit() {
+
+    if(this.checkoutFormGroup.invalid){
+      this.checkoutFormGroup.markAllAsTouched();
+    }
     console.log('Handling the submit button');
     console.log(this.checkoutFormGroup.get('customer')!.value);
   }
@@ -92,8 +131,12 @@ export class CheckoutComponent implements OnInit {
       this.checkoutFormGroup
         .get('billingAddress')!
         .setValue(this.checkoutFormGroup.get('shippingAddress')!.value);
+
+      this.billingAddressStates = this.shippingAddressStates;
     } else {
       this.checkoutFormGroup.get('billingAddress')!.reset();
+      // bug fix for states
+      this.billingAddressStates = [];
     }
 
     // const billingAddressControl = this.checkoutFormGroup.get('billingAddress');
@@ -110,6 +153,10 @@ export class CheckoutComponent implements OnInit {
     //   billingAddressControl.reset();
     // }
   }
+
+  get firstName() {return this.checkoutFormGroup.get('customer.firstName');}
+  get lastName() {return this.checkoutFormGroup.get('customer.lastName');}
+  get email() {return this.checkoutFormGroup.get('customer.email');}
 
   handleMonthsAndYears() {
     const creditCardFormGroup = this.checkoutFormGroup.get('creditCard');
@@ -134,7 +181,7 @@ export class CheckoutComponent implements OnInit {
       });
   }
 
-  getStates(formGroupName: string){
+  getStates(formGroupName: string) {
     const formGroup = this.checkoutFormGroup.get(formGroupName);
 
     const countryCode = formGroup?.value.country.code;
@@ -143,18 +190,15 @@ export class CheckoutComponent implements OnInit {
     console.log(`${formGroupName} country code: ${countryCode}`);
     console.log(`${formGroupName} country name: ${countryName}`);
 
-
-    this.luv2ShopFormService.getStates(countryCode).subscribe(
-      data => {
-        if(formGroupName === 'shippingAddress'){
-          this.shippingAddressStates = data;
-        }else{
-          this.billingAddressStates = data;
-        }
-
-        // select first item by default
-        formGroup?.get('state')?.setValue(data[0]);
+    this.luv2ShopFormService.getStates(countryCode).subscribe((data) => {
+      console.log(data);
+      if (formGroupName === 'shippingAddress') {
+        this.shippingAddressStates = data;
+      } else {
+        this.billingAddressStates = data;
       }
-    )
+
+      formGroup?.get('state')?.setValue(data[0]);
+    });
   }
 }
